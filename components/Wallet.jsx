@@ -2,12 +2,12 @@
 import { useState, useEffect } from 'react';
 
 const Wallet = () => {
-  const [balance, setBalance] = useState(0);
-  const [debt, setDebt] = useState(0);
+  const [balance, setBalance] = useState(null);
+  const [debt, setDebt] = useState(null);
 
   useEffect(() => {
     let storedBalance = localStorage.getItem('balance');
-    storedBalance && !balance ? setBalance(storedBalance) : null;
+    storedBalance ? setBalance(storedBalance) : setBalance(0);
     debt ? setDebt(debt) : null;
   });
 
