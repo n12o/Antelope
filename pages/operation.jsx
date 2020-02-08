@@ -1,7 +1,8 @@
 import Head from '../components/Head';
 import Layout from '../components/Layout';
+import Operation from '../components/Operation';
 
-const indexPage = () => {
+const operationPage = () => {
   return (
     <div lang='en'>
       <Head
@@ -9,10 +10,10 @@ const indexPage = () => {
         desc={'this is my website for testing nextjs'}
       />
       <Layout>
-        <h1>Hello World!</h1>
+        <Operation />
       </Layout>
     </div>
   );
 };
 
-export default indexPage;
+export default operationPage;
