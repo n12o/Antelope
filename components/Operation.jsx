@@ -1,6 +1,9 @@
 //Component for Index page
 import { useState } from 'react';
 
+const inputStyled = 'block my-8 mx-auto';
+const buttonStyled = 'block my-8 mx-auto';
+
 const Operation = () => {
   const [value, setValue] = useState('');
 
@@ -21,8 +24,11 @@ const Operation = () => {
         type='number'
         name='set'
         id='balance'
+        className={inputStyled}
       />
-      <button onClick={handleSubmit}>Submit</button>
+      <button className={buttonStyled} onClick={handleSubmit}>
+        Submit
+      </button>
     </>
   );
 };
