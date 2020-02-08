@@ -63,10 +63,18 @@ const Operation = () => {
         return log;
       })
       .then(log => {
+        const dateString = () => {
+          const thisTime = Date();
+          const timeArray = thisTime.split(' ');
+          const [day, month, date, year, time, ...other] = timeArray;
+          return `Change was made ${date} ${month} at ${time} (${day})`;
+        };
+
         const entry = {
           operation: operation,
           target: target,
-          amount: amount
+          amount: amount,
+          dateString: dateString()
         };
         log.push(entry);
         localforage

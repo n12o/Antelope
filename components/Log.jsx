@@ -21,7 +21,7 @@ const Log = () => {
 
   return (
     <>
-      <ul className={'ml-16 mt-6'}>
+      <ul className={'mt-6'}>
         {log[0]
           ? log.map((item, index) => {
               let isAdd = item.operation === 'add';
@@ -30,8 +30,16 @@ const Log = () => {
                 item.amount
               } ${isAdd ? 'to' : 'from'} ${item.target}`;
               return (
-                <li className={'my-4'} key={index}>
-                  {statement}
+                <li
+                  className={
+                    'w-9/12 mx-auto my-4 bg-teal-300 rounded-lg py-2 px-4 shadow-lg'
+                  }
+                  key={index}
+                >
+                  <p>{statement}</p>
+                  <p className={'text-xs text-gray-700 text-right'}>
+                    {item.dateString}
+                  </p>
                 </li>
               );
             })
