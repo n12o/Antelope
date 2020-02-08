@@ -1,32 +1,94 @@
 //Component for Index page
 import { useState } from 'react';
+import localforage from 'localforage';
 
-const inputStyled = 'block my-8 mx-auto';
-const buttonStyled = 'block my-8 mx-auto';
+const centerElement = 'block my-8 mx-auto';
 
 const Operation = () => {
   const [value, setValue] = useState('');
+  const [operation, setOperation] = useState('add');
+  const [target, setTarget] = useState('balance');
 
   function handleSubmit() {
     event.preventDefault();
-    localStorage.setItem('balance', value);
+    localforage
+      .getItem('wallet')
+      .then(wallet => {
+        if (!wallet) {
+          wallet = {};
+          console.log('there is no wallet. Creating new');
+        }
+        if (wallet[target] === 0 || wallet[target]) {
+          console.log('wallet has a target');
+          return wallet;
+        } else {
+          console.log('initializing new target value', wallet[target]);
+          wallet[target] = 0;
+          return wallet;
+        }
+      })
+      .then(wallet => {
+        if (operation === 'add') {
+          wallet[target] += Number(value);
+          localforage
+            .setItem('wallet', wallet)
+            .then(wallet => console.log('added to wallet'))
+            .catch(err => console.log(err));
+        } else {
+          wallet[target] -= Number(value);
+          localforage
+            .setItem('wallet', wallet)
+            .then(() => console.log('removed from wallet'))
+            .catch(err => console.log(err));
+        }
+      })
+      .catch(err => console.log(err));
     setValue('');
   }
 
-  function handleChange(event) {
+  function handleValueChange(event) {
     setValue(event.target.value);
   }
+
+  function handleOperationChange(event) {
+    setOperation(event.target.value);
+  }
+  function handleTargetChange(event) {
+    setTarget(event.target.value);
+  }
+
   return (
     <>
+      <select
+        onChange={handleOperationChange}
+        value={operation}
+        name='operation'
+        id='operation'
+        className={centerElement}
+      >
+        <option value='add'>Add</option>
+        <option value='remove'>Remove</option>
+      </select>
+      <select
+        onChange={handleTargetChange}
+        value={target}
+        name='target'
+        id='target'
+        className={centerElement}
+      >
+        <option value='balance'>Balance</option>
+        <option value='debt'>Debt</option>
+        <option value='loan'>Loan</option>
+      </select>
       <input
         value={value}
-        onChange={handleChange}
+        onChange={handleValueChange}
         type='number'
         name='set'
         id='balance'
-        className={inputStyled}
+        className={centerElement}
       />
-      <button className={buttonStyled} onClick={handleSubmit}>
+      <button className={centerElement} onClick={handleSubmit}>
         Submit
       </button>
     </>

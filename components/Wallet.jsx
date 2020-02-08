@@ -1,20 +1,28 @@
 //Component for Index page
-import { useState, useEffect } from 'react';
+import localforage from 'localforage';
+import { useEffect, useState } from 'react';
 
 const Wallet = () => {
   const [balance, setBalance] = useState(null);
   const [debt, setDebt] = useState(null);
+  const [loan, setLoan] = useState(null);
 
   useEffect(() => {
-    let storedBalance = localStorage.getItem('balance');
-    storedBalance ? setBalance(storedBalance) : setBalance(0);
-    debt ? setDebt(debt) : null;
+    localforage.getItem('wallet').then(wallet => {
+      if (!wallet) {
+        return;
+      }
+      setBalance(wallet.balance);
+      setDebt(wallet.debt);
+      setLoan(wallet.loan);
+    });
   });
 
   return (
     <>
-      <p>Balance: {balance}</p>
-      <p>Debt: {debt}</p>
+      <p className={'mt-20 text-center'}>Balance: {balance || '0'}</p>
+      <p className={'my-5 text-center'}>Debt: {debt || '0'}</p>
+      <p className={'my-5 text-center'}>Loaned: {loan || '0'}</p>
     </>
   );
 };
