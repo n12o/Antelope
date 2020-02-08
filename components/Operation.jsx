@@ -32,18 +32,49 @@ const Operation = () => {
           wallet[target] += Number(value);
           localforage
             .setItem('wallet', wallet)
-            .then(wallet => console.log('added to wallet'))
+            .then(() => {
+              console.log('added to wallet');
+              addEntry(operation, target, value);
+            })
             .catch(err => console.log(err));
         } else {
           wallet[target] -= Number(value);
           localforage
             .setItem('wallet', wallet)
-            .then(() => console.log('removed from wallet'))
+            .then(() => {
+              console.log('removed from wallet');
+              addEntry(operation, target, value);
+            })
             .catch(err => console.log(err));
         }
       })
       .catch(err => console.log(err));
     setValue('');
+  }
+
+  function addEntry(operation, target, amount) {
+    localforage
+      .getItem('log')
+      .then(log => {
+        if (!log) {
+          log = [];
+          console.log('creating new log');
+        }
+        return log;
+      })
+      .then(log => {
+        const entry = {
+          operation: operation,
+          target: target,
+          amount: amount
+        };
+        log.push(entry);
+        localforage
+          .setItem('log', log)
+          .then(() => console.log('new entry added to the log'))
+          .catch(err => console.log(err));
+      })
+      .catch(err => console.log(err));
   }
 
   function handleValueChange(event) {

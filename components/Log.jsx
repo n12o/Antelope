@@ -1,22 +1,42 @@
-//Component for Index page
+//Component for Log page
+import localforage from 'localforage';
+import { useEffect, useState } from 'react';
 
 const Log = () => {
+  const [log, setLog] = useState([]);
+
+  useEffect(() => {
+    localforage
+      .getItem('log')
+      .then(newLog => {
+        if (!newLog) {
+          console.log('the is no log');
+          return;
+        }
+        setLog(newLog);
+        console.log(newLog);
+      })
+      .catch(err => console.log(err));
+  }, []); //this [] ensures that effect runs only once
+
   return (
     <>
-      <h1 className={'p-4'}>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorem,
-        recusandae. Nulla fugit numquam unde eum magnam tempora nemo optio
-        veniam quae nobis exercitationem error quibusdam tenetur eveniet
-        excepturi quis ipsum, blanditiis repellendus provident sed maiores
-        aperiam. Vero enim doloremque iusto, placeat, dolorum vitae iste cumque
-        sapiente delectus inventore nesciunt quae! Lorem ipsum dolor sit, amet
-        consectetur adipisicing elit. Qui dignissimos magnam harum officiis
-        quidem commodi quo nobis rem facere veritatis alias consequuntur fuga
-        reprehenderit expedita, error tenetur minus dolor? Accusamus
-        voluptatibus dicta corrupti vitae expedita laboriosam sint velit harum
-        pariatur delectus cumque et fuga voluptate exercitationem nihil, maxime
-        eligendi repellat.
-      </h1>
+      <ul className={'ml-16 mt-6'}>
+        {log[0]
+          ? log.map((item, index) => {
+              let isAdd = item.operation === 'add';
+
+              const statement = `${isAdd ? 'Added' : 'Removed'} ${
+                item.amount
+              } ${isAdd ? 'to' : 'from'} ${item.target}`;
+              return (
+                <li className={'my-4'} key={index}>
+                  {statement}
+                </li>
+              );
+            })
+          : 'There is nothing in the logs'}
+      </ul>
     </>
   );
 };

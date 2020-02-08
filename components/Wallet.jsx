@@ -8,15 +8,18 @@ const Wallet = () => {
   const [loan, setLoan] = useState(null);
 
   useEffect(() => {
-    localforage.getItem('wallet').then(wallet => {
-      if (!wallet) {
-        return;
-      }
-      setBalance(wallet.balance);
-      setDebt(wallet.debt);
-      setLoan(wallet.loan);
-    });
-  });
+    localforage
+      .getItem('wallet')
+      .then(wallet => {
+        if (!wallet) {
+          return;
+        }
+        setBalance(wallet.balance);
+        setDebt(wallet.debt);
+        setLoan(wallet.loan);
+      })
+      .catch(err => console.log(err));
+  }, []);
 
   return (
     <>
