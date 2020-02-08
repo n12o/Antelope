@@ -12,17 +12,17 @@ const Nav = () => {
     <nav className={nav}>
       <ul className={navList}>
         <NavItem
-          class={route === '/' ? active : ''}
+          active={route === '/' ? active : ''}
           title={'Wallet'}
           href={'/'}
         />
         <NavItem
-          class={route === '/operation' ? active : ''}
+          active={route === '/operation' ? active : ''}
           title={'Operations'}
           href={'/operation'}
         />
         <NavItem
-          class={route === '/log' ? active : ''}
+          active={route === '/log' ? active : ''}
           title={'Log'}
           href={'/log'}
         />
