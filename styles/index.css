@@ -1,0 +1,20 @@
+/* purgecss start ignore */
+@tailwind base;
+@tailwind components;
+/* purgecss end ignore */
+@tailwind utilities;
+
+html {
+    background-color: aliceblue;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-around;
+}
+
+.active {
+    color: black;
+    text-decoration: none;
+    pointer-events: none;
+}
