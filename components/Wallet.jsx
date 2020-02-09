@@ -6,6 +6,7 @@ const Wallet = () => {
   const [balance, setBalance] = useState(null);
   const [debt, setDebt] = useState(null);
   const [loan, setLoan] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     localforage
@@ -17,15 +18,22 @@ const Wallet = () => {
         setBalance(wallet.balance);
         setDebt(wallet.debt);
         setLoan(wallet.loan);
+        setLoading(false);
       })
       .catch(err => console.log(err));
   }, []);
 
   return (
     <>
-      <p className={'mt-20 text-center'}>Balance: {balance || '0'}</p>
-      <p className={'my-5 text-center'}>Debt: {debt || '0'}</p>
-      <p className={'my-5 text-center'}>Loaned: {loan || '0'}</p>
+      {loading ? (
+        ''
+      ) : (
+        <>
+          <p className={'mt-20 text-center'}>Balance: {balance || '0'}</p>
+          <p className={'my-5 text-center'}>Debt: {debt || '0'}</p>
+          <p className={'my-5 text-center'}>Loaned: {loan || '0'}</p>
+        </>
+      )}
     </>
   );
 };
