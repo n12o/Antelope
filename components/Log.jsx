@@ -1,7 +1,7 @@
 //Component for Log page
 import localforage from 'localforage';
 import { useEffect, useState } from 'react';
-import Entry from './Entry';
+import LogItem from './LogItem';
 
 const Log = () => {
   const [log, setLog] = useState([]);
@@ -35,8 +35,8 @@ const Log = () => {
                   } ${isAdd ? 'to' : 'from'} ${item.target}`;
 
                   return (
-                    //defining element to render for each entry
-                    <Entry
+                    //defining element to render for each LogItem
+                    <LogItem
                       key={index + 2}
                       statement={statement}
                       date={item.dateString}

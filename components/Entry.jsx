@@ -1,18 +1,50 @@
-import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import localforage from 'localforage';
 
-function Entry(props) {
-  return (
-    <Link href={`/log/entry?index=${props.index}`}>
-      <li
-        className={
-          'w-9/12 mx-auto my-4 bg-teal-300 rounded-lg py-2 px-4 shadow-lg cursor-pointer'
+const centerElement = 'block my-8 mx-auto text-center';
+
+export default function EntryPage(props) {
+  const [entry, setEntry] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    console.log('Query id: ' + props.query.index);
+    if (!props.query.index) {
+      console.log('There is no query yet. Skipping');
+    } else {
+      console.log('there is a query. Doing something');
+      localforage.getItem('log').then(log => {
+        if (!log) {
+          console.log('there is no log. Returning');
+          setLoading(false);
+        } else {
+          setEntry(log[props.query.index]);
+          setLoading(false);
+          console.log('entry set');
         }
-      >
-        <p>{props.statement}</p>
-        <p className={'text-xs text-gray-700 text-right'}>{props.date}</p>
-      </li>
-    </Link>
+      });
+    }
+  }, [props.query]); //trigger effect only when queryer query changes
+
+  return (
+    <>
+      {loading ? (
+        ''
+      ) : (
+        <>
+          <h1 className={centerElement}>{entry ? entry.dateString : ''}</h1>
+          <p className={centerElement}>
+            Amount changed: {entry ? entry.amount : ''}
+          </p>
+          <p className={centerElement}>
+            Operation made: {entry ? entry.operation : ''}
+          </p>
+          <p className={centerElement}>Note:</p>
+          <p className={centerElement}>
+            {entry ? entry.note : 'There is nothing in the note'}
+          </p>
+        </>
+      )}
+    </>
   );
 }
-
-export default Entry;

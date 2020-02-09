@@ -29,69 +29,52 @@ const Operation = () => {
           return wallet;
         }
       }) //wallet is a copy of current wallet object in localforage
-      // TO_DO: RESTRUCTURE BELOW LINE INTO ONE
       .then(wallet => {
         if (operation === 'add') {
           wallet[target] += Number(value);
-          //set new value for a wallet target based on operation
-          localforage
-            .setItem('wallet', wallet)
-            .then(() => {
-              addEntry(operation, target, value);
-            })
-            .catch(err => console.log(err));
         } else {
           wallet[target] -= Number(value);
-          localforage
-            .setItem('wallet', wallet)
-            .then(() => {
-              addEntry(operation, target, value);
-            })
-            .catch(err => console.log(err));
         }
+        localforage
+          .setItem('wallet', wallet)
+          .then(() => {
+            localforage
+              .getItem('log')
+              .then(log => {
+                if (!log) {
+                  log = [];
+                  console.log('Creating new log');
+                }
+                const dateString = () => {
+                  const thisTime = Date();
+                  const timeArray = thisTime.split(' ');
+                  const [day, month, date, year, time, ...other] = timeArray;
+                  return `Change was made ${date} ${month} at ${time} (${day})`;
+                };
+                //create new entry based on current form values
+                const entry = {
+                  operation: operation,
+                  target: target,
+                  amount: value,
+                  dateString: dateString(),
+                  note: note
+                };
+                //add enrty to the log
+                log.push(entry);
+                //finally replace old log value with the new one
+                localforage
+                  .setItem('log', log)
+                  .then(() => console.log('new entry added to the log'))
+                  .catch(err => console.log(err));
+              })
+              .catch(err => console.log(err));
+          })
+          .catch(err => console.log(err));
       })
       .catch(err => console.log(err));
     //clear inputs
     setValue('');
     setNote('');
-  }
-
-  function addEntry(operation, target, amount) {
-    localforage
-      .getItem('log')
-      .then(log => {
-        if (!log) {
-          log = [];
-          console.log('Creating new log');
-        }
-        return log;
-      }) //this log is a copy of the log array stored in the localforage
-      .then(log => {
-        const dateString = () => {
-          const thisTime = Date();
-          const timeArray = thisTime.split(' ');
-          const [day, month, date, year, time, ...other] = timeArray;
-          return `Change was made ${date} ${month} at ${time} (${day})`;
-        };
-        //create new entry based on current form values
-        const entry = {
-          operation: operation,
-          target: target,
-          amount: amount,
-          dateString: dateString(),
-          note: note
-        };
-
-        //add enrty to the log
-        log.push(entry);
-
-        //finally replace old log value with the new one
-        localforage
-          .setItem('log', log)
-          .then(() => console.log('new entry added to the log'))
-          .catch(err => console.log(err));
-      })
-      .catch(err => console.log(err));
   }
 
   function handleValueChange(event) {
