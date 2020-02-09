@@ -1,6 +1,6 @@
-import Head from '../components/Head';
-import Layout from '../components/Layout';
-import Log from '../components/Log';
+import Head from '../../components/Head';
+import Layout from '../../components/Layout';
+import Log from '../../components/Log';
 
 const logPage = () => {
   return (

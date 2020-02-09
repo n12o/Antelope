@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import NavItem from './NavItem';
 
+//styles
 const active = 'text-green-300 pointer-events-none';
 const navList = 'flex justify-around h-16';
 const nav = 'fixed bottom-0 w-screen';

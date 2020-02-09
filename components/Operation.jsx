@@ -1,4 +1,4 @@
-//Component for Index page
+//Component for Operation page
 import { useState } from 'react';
 import localforage from 'localforage';
 
@@ -8,32 +8,35 @@ const Operation = () => {
   const [value, setValue] = useState('');
   const [operation, setOperation] = useState('add');
   const [target, setTarget] = useState('balance');
+  const [note, setNote] = useState('');
 
   function handleSubmit() {
     event.preventDefault();
     localforage
       .getItem('wallet')
       .then(wallet => {
+        //if there is no wallet create new
         if (!wallet) {
           wallet = {};
-          console.log('there is no wallet. Creating new');
+          console.log('There is no wallet. Creating new');
         }
+        //if there is a wallet pass wallet to then
         if (wallet[target] === 0 || wallet[target]) {
-          console.log('wallet has a target');
           return wallet;
         } else {
-          console.log('initializing new target value', wallet[target]);
+          //if there is no target for wallet initialize it
           wallet[target] = 0;
           return wallet;
         }
-      })
+      }) //wallet is a copy of current wallet object in localforage
+      // TO_DO: RESTRUCTURE BELOW LINE INTO ONE
       .then(wallet => {
         if (operation === 'add') {
           wallet[target] += Number(value);
+          //set new value for a wallet target based on operation
           localforage
             .setItem('wallet', wallet)
             .then(() => {
-              console.log('added to wallet');
               addEntry(operation, target, value);
             })
             .catch(err => console.log(err));
@@ -42,14 +45,15 @@ const Operation = () => {
           localforage
             .setItem('wallet', wallet)
             .then(() => {
-              console.log('removed from wallet');
               addEntry(operation, target, value);
             })
             .catch(err => console.log(err));
         }
       })
       .catch(err => console.log(err));
+    //clear inputs
     setValue('');
+    setNote('');
   }
 
   function addEntry(operation, target, amount) {
@@ -58,10 +62,10 @@ const Operation = () => {
       .then(log => {
         if (!log) {
           log = [];
-          console.log('creating new log');
+          console.log('Creating new log');
         }
         return log;
-      })
+      }) //this log is a copy of the log array stored in the localforage
       .then(log => {
         const dateString = () => {
           const thisTime = Date();
@@ -69,14 +73,19 @@ const Operation = () => {
           const [day, month, date, year, time, ...other] = timeArray;
           return `Change was made ${date} ${month} at ${time} (${day})`;
         };
-
+        //create new entry based on current form values
         const entry = {
           operation: operation,
           target: target,
           amount: amount,
-          dateString: dateString()
+          dateString: dateString(),
+          note: note
         };
+
+        //add enrty to the log
         log.push(entry);
+
+        //finally replace old log value with the new one
         localforage
           .setItem('log', log)
           .then(() => console.log('new entry added to the log'))
@@ -94,6 +103,10 @@ const Operation = () => {
   }
   function handleTargetChange(event) {
     setTarget(event.target.value);
+  }
+
+  function handleNoteChange(event) {
+    setNote(event.target.value);
   }
 
   return (
@@ -125,8 +138,19 @@ const Operation = () => {
         type='number'
         name='set'
         id='balance'
-        className={centerElement}
+        className={centerElement + ' appearance-none'}
+        placeholder={'Enter amount'}
       />
+      <textarea
+        value={note}
+        onChange={handleNoteChange}
+        className={centerElement}
+        name='note'
+        id='note'
+        cols='20'
+        rows='6'
+        placeholder={'Enter your note'}
+      ></textarea>
       <button className={centerElement} onClick={handleSubmit}>
         Submit
       </button>
