@@ -4,7 +4,7 @@ import Layout from '../components/Layout';
 import Operation from '../components/Operation';
 import { useState } from 'react';
 
-const operationPage = () => {
+const OperationPage = () => {
   const [alert, setAlert] = useState(false);
   const [message, setMessage] = useState(null);
 
@@ -12,27 +12,28 @@ const operationPage = () => {
     console.log(msg);
     setAlert(true);
     setMessage(msg);
+    // hide alert after short period of time
     setTimeout(() => {
       setAlert('');
-    }, 1500);
+    }, 2200);
   };
 
   function handleCloseAlert() {
-    setAlert('');
+    setAlert(false);
   }
 
   return (
-    <div lang='en'>
+    <>
       <Head
         title={'Home Page'}
         desc={'this is my website for testing nextjs'}
       />
       <Layout>
-        <Operation onClick={handleAlert} />
+        <Operation fireAlert={handleAlert} />
       </Layout>
       <Alert onClick={handleCloseAlert} message={message} alert={alert} />
-    </div>
+    </>
   );
 };
 
-export default operationPage;
+export default OperationPage;

@@ -1,19 +1,47 @@
 import Head from '../components/Head';
 import Layout from '../components/Layout';
 import Wallet from '../components/Wallet';
+import Welcome from '../components/Welcome';
+import { useState, useEffect } from 'react';
+import localforage from 'localforage';
 
-const indexPage = () => {
+const IndexPage = () => {
+  const [wallet, setWallet] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    localforage
+      .getItem('wallet')
+      .then(wallet => {
+        if (!wallet) {
+          setLoading(false);
+          return;
+        }
+        setWallet(wallet);
+        setLoading(false);
+      })
+      .catch(err => console.log(err));
+  }, []);
+
+  let display;
+
+  if (loading) {
+    display = '';
+  } else if (!wallet) {
+    display = <Welcome />;
+  } else {
+    display = <Wallet wallet={wallet} />;
+  }
+
   return (
-    <div lang='en'>
+    <>
       <Head
         title={'Home Page'}
         desc={'this is my website for testing nextjs'}
       />
-      <Layout>
-        <Wallet />
-      </Layout>
-    </div>
+      <Layout>{display}</Layout>
+    </>
   );
 };
 
-export default indexPage;
+export default IndexPage;

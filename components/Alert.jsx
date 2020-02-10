@@ -10,6 +10,13 @@ function Alert(props) {
     message = 'You have change your balance and added new entry to the log.';
   } else if (props.message === 'not validated') {
     message = 'Please fill required form fields';
+  } else if (props.message === 'negative') {
+    message =
+      'Amount must be positive. Please change operation if you want to remove money';
+  } else if (props.message === 'less than zero') {
+    message = 'You cannot have negative money in your wallet';
+  } else if (props.message === 'isNaN') {
+    message = 'Amount must be a number';
   } else {
     message = 'Sorry, something went wrong. Please try again later';
   }

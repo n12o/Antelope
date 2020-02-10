@@ -2,7 +2,7 @@ import Head from '../../components/Head';
 import Layout from '../../components/Layout';
 import Log from '../../components/Log';
 
-const logPage = () => {
+const LogPage = () => {
   return (
     <>
       <Head
@@ -16,4 +16,4 @@ const logPage = () => {
   );
 };
 
-export default logPage;
+export default LogPage;

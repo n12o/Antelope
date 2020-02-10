@@ -5,7 +5,7 @@ const page = 'absolute inset-0 mb-16 overflow-auto';
 
 export default function Layout(props) {
   return (
-    <div className={shell}>
+    <div lang='en' className={shell}>
       <Nav />
       <div className={page}>{props.children}</div>
     </div>

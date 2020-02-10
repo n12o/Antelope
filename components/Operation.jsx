@@ -5,92 +5,37 @@ import localforage from 'localforage';
 const centerElement = 'block my-8 mx-auto';
 
 const Operation = props => {
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(0);
   const [operation, setOperation] = useState('add');
   const [target, setTarget] = useState('balance');
   const [note, setNote] = useState('');
 
-  function checkRequired() {
-    if (value && operation && target) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  const updateWallet = async () => {
-    const validated = checkRequired();
-    console.log(validated);
-    if (!validated) {
-      throw 'not validated';
-    }
-    let wallet = await localforage.getItem('wallet');
-    //create new wallet if there is no wallet
-    if (!wallet) {
-      wallet = {};
-    }
-    //create new target if there is no target
-    if (!wallet[target]) {
-      wallet[target] = 0;
-    }
-    //update target value based on operation
-    if (operation === 'add') {
-      wallet[target] += Number(value);
-    } else {
-      wallet[target] -= Number(value);
-    }
-    //return promise of success or failure to add to wallet
-    return await localforage.setItem('wallet', wallet);
-  };
-
-  const updateLog = async () => {
-    const validated = checkRequired();
-    if (!validated) {
-      throw 'not validated';
-    }
-    let log = await localforage.getItem('log');
-    //create new log if there is no log present
-    if (!log) {
-      log = [];
-    }
-    const dateString = () => {
-      const thisTime = Date();
-      const timeArray = thisTime.split(' ');
-      const [day, month, date, year, time, ...other] = timeArray;
-      return `Change was made ${date} ${month} at ${time} (${day})`;
-    };
-    //create new entry based on current form values
-    const entry = {
-      operation: operation,
-      target: target,
-      amount: value,
-      dateString: dateString(),
-      note: note
-    };
-    //add enrty to the log
-    log.push(entry);
-    //return promise of success or failure of updating the log
-    return localforage.setItem('log', log);
-  };
-
-  function handleSubmit() {
-    event.preventDefault();
-
-    Promise.all([updateWallet(), updateLog()])
-      .then(() => {
-        props.onClick('success');
-      })
-      .catch(err => {
-        props.onClick(err);
-      });
-
-    //clear inputs
-    setValue('');
-    setNote('');
-  }
-
   function handleValueChange(event) {
-    setValue(event.target.value);
+    let input = event.target.value;
+    //Checks if value is blank or not a number
+    if (input === '') {
+      //Sets to zero in case someone tries to remove single digit
+      if (value.length === 1) {
+        setValue(0);
+      } else {
+        setValue(value);
+        props.fireAlert('isNaN');
+      }
+      return;
+    }
+    //This needed to set new value in place of initial '0'
+    if (input[0] === '0') {
+      setValue(input.replace('0', ''));
+      return;
+    }
+    //Value cannot be negative
+    if (input < 0) {
+      setValue(value);
+      props.fireAlert('negative');
+      return;
+    }
+    //Value is validated and ready to be updated
+    setValue(input);
   }
 
   function handleOperationChange(event) {
@@ -103,6 +48,87 @@ const Operation = props => {
   function handleNoteChange(event) {
     setNote(event.target.value);
   }
+
+  function handleSubmit() {
+    event.preventDefault();
+
+    update()
+      .then(() => props.fireAlert('success'))
+      .catch(err => props.fireAlert(err));
+
+    //clear inputs
+    setValue('');
+    setNote('');
+  }
+
+  function checkRequired() {
+    if (value && operation && target) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  const update = async () => {
+    //Validate form
+    const validated = checkRequired();
+    if (!validated) {
+      throw 'not validated';
+    }
+    //Get wallet
+    let wallet = await localforage.getItem('wallet');
+    if (!wallet) {
+      wallet = {};
+    }
+    if (!wallet[target]) {
+      wallet[target] = 0;
+    }
+    console.log(wallet[target]);
+    //Validate action
+    if (operation === 'remove') {
+      if (wallet[target] === 0) {
+        throw 'less than zero';
+      } else if (wallet[target] - Number(value) < 0) {
+        throw 'less than zero';
+      } else {
+        wallet[target] -= Number(value);
+      }
+    } else if (operation === 'add') {
+      wallet[target] += Number(value);
+    } else {
+      throw 'invalid operation';
+    }
+    //Get log
+    let log = await localforage.getItem('log');
+    if (!log) {
+      log = [];
+    }
+    //Add to log
+    const dateString = () => {
+      const thisTime = Date();
+      const timeArray = thisTime.split(' ');
+      const [day, month, date, year, time, ...other] = timeArray;
+      return `Change was made ${date} ${month} at ${time} (${day})`;
+    };
+    const entry = {
+      operation: operation,
+      target: target,
+      amount: value,
+      dateString: dateString(),
+      note: note
+    };
+    log.unshift(entry);
+    //Add to storage
+    return Promise.all([updateWallet(wallet), updateLog(log)]);
+  };
+
+  const updateWallet = async wallet => {
+    return localforage.setItem('wallet', wallet);
+  };
+
+  const updateLog = async log => {
+    return localforage.setItem('log', log);
+  };
 
   return (
     <>
@@ -129,7 +155,7 @@ const Operation = props => {
           <option value='loan'>Loan</option>
         </select>
         <input
-          required
+          step='0.01'
           value={value}
           onChange={handleValueChange}
           type='number'
