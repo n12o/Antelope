@@ -5,32 +5,38 @@ function Alert(props) {
   const textGreen = 'text-green-500';
 
   let message;
-
-  if (props.message === 'success') {
-    message = 'You have change your balance and added new entry to the log.';
-  } else if (props.message === 'not validated') {
-    message = 'Please fill required form fields';
-  } else if (props.message === 'negative') {
-    message =
-      'Amount must be positive. Please change operation if you want to remove money';
-  } else if (props.message === 'less than zero') {
-    message = 'You cannot have negative money in your wallet';
-  } else if (props.message === 'isNaN') {
-    message = 'Amount must be a number';
-  } else {
-    message = 'Sorry, something went wrong. Please try again later';
+  switch (props.message) {
+    case 'success':
+      message = 'You have change your balance and added new entry to the log.';
+      break;
+    case 'not validated':
+      message = 'Please fill required form fields';
+      break;
+    case 'negative':
+      message =
+        'Amount must be positive. Please change operation if you want to remove money';
+      break;
+    case 'less than zero':
+      message = 'You cannot have negative money in your wallet';
+      break;
+    case 'isNaN':
+      message = 'Amount must be a number';
+      break;
+    default:
+      message = 'Sorry, something went wrong. Please try again later';
+      break;
   }
 
   return (
     <div
       className={`absolute w-screen transition-all ease-out duration-700 bottom-0 mb-20 ${
         props.alert ? '' : 'opacity-0 pointer-events-none'
-      }`}
+        }`}
     >
       <div
         className={`border ${
           props.message === 'success' ? green : red
-        } px-4 py-3 rounded relative mx-4`}
+          } px-4 py-3 rounded relative mx-4`}
         role='alert'
       >
         <strong className='font-bold'>
@@ -44,7 +50,7 @@ function Alert(props) {
           <svg
             className={`fill-current h-6 w-6  ${
               props.message === 'success' ? textGreen : textRed
-            }`}
+              }`}
             role='button'
             xmlns='http://www.w3.org/2000/svg'
             viewBox='0 0 20 20'

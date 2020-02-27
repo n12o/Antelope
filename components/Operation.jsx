@@ -61,14 +61,6 @@ const Operation = props => {
     setNote('');
   }
 
-  function checkRequired() {
-    if (value && operation && target) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   const update = async () => {
     //Validate form
     const validated = checkRequired();
@@ -108,7 +100,7 @@ const Operation = props => {
       const thisTime = Date();
       const timeArray = thisTime.split(' ');
       const [day, month, date, year, time, ...other] = timeArray;
-      return `Change was made ${date} ${month} at ${time} (${day})`;
+      return `${date} ${month} at ${time}`;
     };
     const entry = {
       operation: operation,
@@ -118,17 +110,21 @@ const Operation = props => {
       note: note
     };
     log.unshift(entry);
+    //Helper function for updating storage
+    const updateItem = async (item, updated) => {
+      return localforage.setItem(item, updated);
+    }
     //Add to storage
-    return Promise.all([updateWallet(wallet), updateLog(log)]);
+    return Promise.all([updateItem('wallet', wallet), updateItem('log', log)]);
   };
 
-  const updateWallet = async wallet => {
-    return localforage.setItem('wallet', wallet);
-  };
-
-  const updateLog = async log => {
-    return localforage.setItem('log', log);
-  };
+  function checkRequired() {
+    if (value && operation && target) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   return (
     <>

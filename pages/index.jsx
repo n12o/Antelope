@@ -10,6 +10,10 @@ const IndexPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    getWallet();
+  }, []);
+
+  const getWallet = () => {
     localforage
       .getItem('wallet')
       .then(wallet => {
@@ -21,16 +25,26 @@ const IndexPage = () => {
         setLoading(false);
       })
       .catch(err => console.log(err));
-  }, []);
+  };
+
+  const handleUpload = () => {
+    getWallet();
+  };
+
+  const handleRemove = () => {
+    setWallet(null);
+  };
+
+  console.log(wallet);
 
   let display;
 
   if (loading) {
     display = '';
   } else if (!wallet) {
-    display = <Welcome />;
+    display = <Welcome onUpload={handleUpload} />;
   } else {
-    display = <Wallet wallet={wallet} />;
+    display = <Wallet onRemove={handleRemove} wallet={wallet} />;
   }
 
   return (
